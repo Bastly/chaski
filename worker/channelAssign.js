@@ -17,5 +17,9 @@ module.exports = function(opts){
         opts.messageReceiver.addChannel(data);
     }); 
     
+    module.close = function close(){
+        channelAssignRep.close();
+    };
+    
     return module;
 };

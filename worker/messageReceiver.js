@@ -17,8 +17,9 @@ module.exports = function(opts){
     var receiversSubs = [];
     for(var i=0; i < atahualpas.length; i++){
         var messageReceiverSub = zmq.socket('sub'); 
-        messageReceiverSub.bind('tcp://' + atahualpas[i]+ ':' + constants.PORT_MESSAGE_RECEIVER);
-        messageReceiverSub.on('message', function(data){
+        messageReceiverSub.bind('tcp://' + atahualpas[i]+ ':' + constants.PORT_CHASKIES);
+        messageReceiverSub.on('message', function(topic, data){
+            console.log('message received' + topic + data);
             opts.messagePublisher.send(data);
         }); 
         receiversSubs.push(messageReceiverSub);
@@ -29,7 +30,14 @@ module.exports = function(opts){
 
     module.addChannel = function addChannel(channelId){
         for(var i = 0; i < receiversSubs.length; i++){
-        
+            console.log('adding channel:' + channelId);
+            receiversSubs[i].subscribe(channelId);
+        }
+    };
+    
+    module.close = function close(){
+        for(var i = 0; i < receiversSubs.length; i++){
+            receiversSubs[i].close();
         }
     };
 

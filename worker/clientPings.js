@@ -11,6 +11,11 @@ module.exports = function(){
     }
      
     setInterval(pingClients, 500);
+
+
+    module.close = function close(){
+        clientPingsPub.close();
+    };
     
     return module;
 };

@@ -25,6 +25,8 @@ describe('Must receive pings', function() {
             console.log('got message');
             console.log(topic, data);
             assert.equal(data, 'ping');
+            clientPings.close();
+            pong.close();
             done();
         });
     });
@@ -45,13 +47,15 @@ describe('Message Publisher', function() {
         receiver.on('message', function(topic, data) {
             assert.equal(channel, topic);
             assert.equal(data, dataToPublish);
+            messagePublisher.close();
+            receiver.close();
             done();
         });
     });
 });
 
 
-describe('Channel Assign and receiver', function() {
+describe('Channel Assign', function() {
     it('It must assign channels', function (done) {
         var messagePublisher = require('../worker/messagePublisher')();
         var messageReceiver = require('../worker/messageReceiver')({"meesagePublisher": messagePublisher, "atahualpas": [{"ip": "127.0.0.1"}]});
@@ -64,10 +68,51 @@ describe('Channel Assign and receiver', function() {
         chaskiAssigner.send(channel);
         chaskiAssigner.on('message', function(result, data){
             assert.equal(result, 200);
+            messagePublisher.close();
+            messageReceiver.close();
+            channelAssign.close();
+            chaskiAssigner.close();
             done();
-
         });
     });
 });
 
+
+describe('Message Receiver', function() {
+    it('It must receive messages', function (done) {
+        var messagePublisher = require('../worker/messagePublisher')();
+        var messageReceiver = require('../worker/messageReceiver')({"meesagePublisher": messagePublisher, "atahualpas": [{"ip": "127.0.0.1"}]});
+        var channelAssign = require('../worker/channelAssign')({"messageReceiver": messageReceiver});
+
+         
+        var chaskiAssigner = zmq.socket('req');
+        chaskiAssigner.connect('tcp://127.0.0.1:' + constants.PORT_CHASKI_ASSIGNER);
+        var channel = 'fakeChannel';
+        var dataToPublish = 'holavato';
+        chaskiAssigner.send(channel);
+        chaskiAssigner.on('message', function(result, data){ });
+
+        var atahualpaMock = zmq.socket('pub');
+        atahualpaMock.bind('tcp://*:' + constants.PORT_CHASKIES);
+        
+        var receiver = zmq.socket('sub');
+        receiver.connect('tcp://127.0.0.1:' + constants.PORT_PUBLISHER_FOR_CLIENTS);
+        receiver.subscribe(channel);
+
+        var sendFakeData = function (){atahualpaMock.send([channel, dataToPublish]);};
+        setInterval(sendFakeData, 100);
+
+        receiver.on('message', function(topic, data) {
+            assert.equal(channel, topic);
+            assert.equal(data, dataToPublish);
+            messagePublisher.close();
+            messageReceiver.close();
+            channelAssign.close();
+            atahualpaMock.close();
+            receiver.close();
+            done();
+        });
+        
+    });
+});
 

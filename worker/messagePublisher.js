@@ -11,5 +11,9 @@ module.exports = function(){
         messagePublisherPub.send(params);
     };
     
+    module.close = function close(){
+        messagePublisherPub.close();
+    };
+    
     return module;
 };
