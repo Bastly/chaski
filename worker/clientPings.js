@@ -1,19 +1,18 @@
 module.exports = function(){
     
     var zmq = require('zmq');
-    var constants = require('constants');
-    var clientPingsPub = zmq.socket('pub'); // publishing channel to forward messages that should be handled by workers.
-    
-    clientPingsPub.bind('tcp://*:' + constants.CLIENT_PINGS);
+    var constants = require('../constants');
+    var clientPingsPub = zmq.socket('pub'); 
+    console.log( 'tcp://*:' + constants.PORT_CLIENT_PINGS);
+    clientPingsPub.bind('tcp://*:' + constants.PORT_CLIENT_PINGS);
     var module = {};
    
     function pingClients (){
-        //TODO change for bunyan
         console.log("pinging clients"); 
-        clientPingsPub.send('ping');
+        clientPingsPub.send(['ping', 'ping']);
     }
      
-    setInterval(pingClients, 5000);
+    setInterval(pingClients, 500);
     
     return module;
 };

@@ -1,16 +1,8 @@
 var fs = require('fs');
-var assert = require("assert");
-var argv = require('optimist').demand('config').argv;
-var testConfig = argv.config;
-assert.ok(fs.existsSync(testConfig), 'config file not found at path: ' + testConfig);
-var config = require('nconf').env().argv().file({file: testConfig});
-
-console.log(config.api);
-
-if(!config.api.key){
-    console.log('Must give chaski info');
-    process.exit(9);
-}
+var assert = require('assert');
+var config = require('./config.json');
+var zmq = require('zmq');
+var constants = require('../constants');
 
 describe('Array', function() {
     describe('#indexOf()', function() {
@@ -20,3 +12,21 @@ describe('Array', function() {
         });
     });
 });
+
+describe('Must receive pings', function() {
+    it('It must receive pings', function (done) {
+
+        var clientPings = require('../worker/clientPings')();
+
+        var pong = zmq.socket('sub');
+        pong.connect('tcp://127.0.0.1:' + constants.PORT_CLIENT_PINGS);
+        pong.subscribe('ping');
+        pong.on('message', function(topic, data) {
+            console.log('got message');
+            console.log(topic, data);
+            assert.equal(data, 'ping');
+            done();
+        });
+    });
+});
+

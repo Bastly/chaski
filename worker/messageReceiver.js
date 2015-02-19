@@ -12,11 +12,12 @@ module.exports = function(opts){
     }
     var zmq = require('zmq');
     var constants = require('constants');
-    var atahualpas = ops.atahualpas;
+    var atahualpas = opts.atahualpas;
+
     var receiversSubs = [];
     for(var i=0; i < atahualpas.length; i++){
         var messageReceiverSub = zmq.socket('sub'); 
-        messageReceiverSub.bind('tcp://*:' + constants.PORT_MESSAGE_RECEIVER);
+        messageReceiverSub.bind('tcp://' + atahualpas[i]+ ':' + constants.PORT_MESSAGE_RECEIVER);
         messageReceiverSub.on('message', function(data){
             opts.messagePublisher.send(data);
         }); 
@@ -27,7 +28,9 @@ module.exports = function(opts){
     var module = {};
 
     module.addChannel = function addChannel(channelId){
-        messageReceiverSub.subscribe(channelId);    
+        for(var i = 0; i < receiversSubs.length; i++){
+        
+        }
     };
 
     return module;

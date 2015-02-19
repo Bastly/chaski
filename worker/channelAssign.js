@@ -12,7 +12,6 @@ module.exports = function(opts){
     var module = {};
    
     channelAssingRep.on('message', function(data){
-        //TODO get correct data format
         console.log("receiced data for flitering new channel:" + data);
         opts.messageReceiver.addChannel(data);
     }); 
