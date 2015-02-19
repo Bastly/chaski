@@ -1,18 +1,28 @@
 module.exports = function(opts){
     
     // CHECK
-    if(!opts || !opts.messagePublisher){
-        throw new Error('message publisher needed');
+    if(!opts){
+        if(!opts.messagePublisher){
+            throw new Error('message publisher needed');
+        }
+        if(!opts.atahualpas){
+            throw new Error('atahualpas ips needed');
+        }
+        throw new Error('opts needed');
     }
     var zmq = require('zmq');
     var constants = require('constants');
-    var messageReceiverSub = zmq.socket('sub'); 
-    
-    messageReceiverSub.bind('tcp://*:' + constants.PORT_MESSAGE_RECEIVER);
+    var atahualpas = ops.atahualpas;
+    var receiversSubs = [];
+    for(var i=0; i < atahualpas.length; i++){
+        var messageReceiverSub = zmq.socket('sub'); 
+        messageReceiverSub.bind('tcp://*:' + constants.PORT_MESSAGE_RECEIVER);
+        messageReceiverSub.on('message', function(data){
+            opts.messagePublisher.send(data);
+        }); 
+        receiversSubs.push(messageReceiverSub);
+    } 
    
-    messageReceiverSub.on('message', function(data){
-        opts.messagePublisher.send(data);
-    }); 
     
     var module = {};
 
