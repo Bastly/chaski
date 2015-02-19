@@ -51,7 +51,7 @@ describe('Message Publisher', function() {
 });
 
 
-describe('Channel Assign', function() {
+describe('Channel Assign and receiver', function() {
     it('It must assign channels', function (done) {
         var messagePublisher = require('../worker/messagePublisher')();
         var messageReceiver = require('../worker/messageReceiver')({"meesagePublisher": messagePublisher, "atahualpas": [{"ip": "127.0.0.1"}]});
@@ -69,3 +69,5 @@ describe('Channel Assign', function() {
         });
     });
 });
+
+
