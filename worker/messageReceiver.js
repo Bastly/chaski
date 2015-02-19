@@ -11,7 +11,7 @@ module.exports = function(opts){
         throw new Error('opts needed');
     }
     var zmq = require('zmq');
-    var constants = require('constants');
+    var constants = require('../constants');
     var atahualpas = opts.atahualpas;
 
     var receiversSubs = [];
