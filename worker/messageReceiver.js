@@ -15,12 +15,12 @@ module.exports = function(opts){
     var atahualpas = opts.atahualpas;
 
     var receiversSubs = [];
+    var messagePublisher = opts.messagePublisher;
     for(var i=0; i < atahualpas.length; i++){
         var messageReceiverSub = zmq.socket('sub'); 
-        messageReceiverSub.bind('tcp://' + atahualpas[i]+ ':' + constants.PORT_CHASKIES);
+        messageReceiverSub.connect('tcp://' + atahualpas[i].ip+ ':' + constants.PORT_CHASKIES);
         messageReceiverSub.on('message', function(topic, data){
-            console.log('message received' + topic + data);
-            opts.messagePublisher.send(data);
+            messagePublisher.send([topic, data]);
         }); 
         receiversSubs.push(messageReceiverSub);
     } 
@@ -30,7 +30,6 @@ module.exports = function(opts){
 
     module.addChannel = function addChannel(channelId){
         for(var i = 0; i < receiversSubs.length; i++){
-            console.log('adding channel:' + channelId);
             receiversSubs[i].subscribe(channelId);
         }
     };

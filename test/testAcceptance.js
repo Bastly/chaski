@@ -22,8 +22,6 @@ describe('Must receive pings', function() {
         pong.connect('tcp://127.0.0.1:' + constants.PORT_CLIENT_PINGS);
         pong.subscribe('ping');
         pong.on('message', function(topic, data) {
-            console.log('got message');
-            console.log(topic, data);
             assert.equal(data, 'ping');
             clientPings.close();
             pong.close();
@@ -80,27 +78,33 @@ describe('Channel Assign', function() {
 
 describe('Message Receiver', function() {
     it('It must receive messages', function (done) {
+        var channel = 'fakeChannel';
+        var dataToPublish = 'holavato';
+        var atahualpaMock = zmq.socket('pub');
+        atahualpaMock.bind('tcp://*:' + constants.PORT_CHASKIES);
+        var sendFakeData = function (){
+            atahualpaMock.send([channel, dataToPublish]);
+        };
+        setInterval(sendFakeData, 10);
+
+
         var messagePublisher = require('../worker/messagePublisher')();
-        var messageReceiver = require('../worker/messageReceiver')({"meesagePublisher": messagePublisher, "atahualpas": [{"ip": "127.0.0.1"}]});
+        var messageReceiver = require('../worker/messageReceiver')({"messagePublisher": messagePublisher, "atahualpas": [{"ip": "127.0.0.1"}]});
         var channelAssign = require('../worker/channelAssign')({"messageReceiver": messageReceiver});
 
          
         var chaskiAssigner = zmq.socket('req');
         chaskiAssigner.connect('tcp://127.0.0.1:' + constants.PORT_CHASKI_ASSIGNER);
-        var channel = 'fakeChannel';
-        var dataToPublish = 'holavato';
+        
+        //assign channel to filter
         chaskiAssigner.send(channel);
         chaskiAssigner.on('message', function(result, data){ });
 
-        var atahualpaMock = zmq.socket('pub');
-        atahualpaMock.bind('tcp://*:' + constants.PORT_CHASKIES);
         
         var receiver = zmq.socket('sub');
         receiver.connect('tcp://127.0.0.1:' + constants.PORT_PUBLISHER_FOR_CLIENTS);
         receiver.subscribe(channel);
 
-        var sendFakeData = function (){atahualpaMock.send([channel, dataToPublish]);};
-        setInterval(sendFakeData, 100);
 
         receiver.on('message', function(topic, data) {
             assert.equal(channel, topic);

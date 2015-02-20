@@ -12,7 +12,6 @@ module.exports = function(opts){
     var module = {};
    
     channelAssignRep.on('message', function(data){
-        console.log("receiced data for flitering new channel:" + data);
         channelAssignRep.send(['200', 'ok']);
         opts.messageReceiver.addChannel(data);
     }); 
