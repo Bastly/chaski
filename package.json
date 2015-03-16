@@ -5,9 +5,10 @@
   "main": "app.js",
   "dependencies": {
     "bunyan": "^1.3.3",
-    "zmq": "^2.10.0",
+    "chaski-connector": "^0.1.0",
+    "nconf": "*",
     "optimist": "^0.6.1",
-    "nconf": "*"
+    "zmq": "^2.10.0"
   },
   "devDependencies": {},
   "scripts": {
