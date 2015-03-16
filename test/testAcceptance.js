@@ -85,19 +85,26 @@ describe('Message Receiver', function() {
         var sendFakeData = function (){
             atahualpaMock.send([channel, dataToPublish]);
         };
-        var atahualpaInterval = setInterval(sendFakeData, 10);
+        setInterval(sendFakeData, 10);
 
 
         var messagePublisher = require('../worker/messagePublisher')();
         var messageReceiver = require('../worker/messageReceiver')({"messagePublisher": messagePublisher, "atahualpas": [{"ip": "127.0.0.1"}]});
         var channelAssign = require('../worker/channelAssign')({"messageReceiver": messageReceiver});
 
+         
+        var chaskiAssigner = zmq.socket('req');
+        chaskiAssigner.connect('tcp://127.0.0.1:' + constants.PORT_CHASKI_ASSIGNER);
         
-        channelAssign.channelAssign(channel); 
+        //assign channel to filter
+        chaskiAssigner.send(channel);
+        chaskiAssigner.on('message', function(result, data){ });
+
         
         var receiver = zmq.socket('sub');
         receiver.connect('tcp://127.0.0.1:' + constants.PORT_PUBLISHER_FOR_CLIENTS);
         receiver.subscribe(channel);
+
 
         receiver.on('message', function(topic, data) {
             assert.equal(channel, topic);
@@ -107,7 +114,6 @@ describe('Message Receiver', function() {
             channelAssign.close();
             atahualpaMock.close();
             receiver.close();
-            clearInterval(atahualpaInterval);
             done();
         });
         

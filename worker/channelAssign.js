@@ -10,16 +10,11 @@ module.exports = function(opts){
     
     channelAssignRep.bind('tcp://*:' + constants.PORT_CHASKI_ASSIGNER);
     var module = {};
-    
-    module.channelAssign = function channelAssign(channelId){
-        opts.messageReceiver.addChannel(channelId);
-    };
    
     channelAssignRep.on('message', function(data){
         channelAssignRep.send(['200', 'ok']);
-        module.channelAssign(data);
+        opts.messageReceiver.addChannel(data);
     }); 
-
     
     module.close = function close(){
         channelAssignRep.close();
