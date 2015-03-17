@@ -2,7 +2,7 @@ var fs = require('fs');
 var assert = require('assert');
 var config = require('./config.json');
 var zmq = require('zmq');
-var constants = require('../constants');
+var constants = require('bastly_constants');
 
 describe('Array', function() {
     describe('#indexOf()', function() {
