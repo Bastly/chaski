@@ -19,7 +19,7 @@ describe('Must receive pings', function() {
         var clientPings = require('../worker/clientPings')();
 
         var pong = zmq.socket('sub');
-        pong.connect('tcp://127.0.0.1:' + constants.PORT_CLIENT_PINGS);
+        pong.connect('tcp://127.0.0.1:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_PINGS);
         pong.subscribe('ping');
         pong.on('message', function(topic, data) {
             assert.equal(data, 'ping');

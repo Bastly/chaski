@@ -3,7 +3,7 @@ module.exports = function(){
     var zmq = require('zmq');
     var constants = require('bastly_constants');
     var clientPingsPub = zmq.socket('pub'); 
-    clientPingsPub.bind('tcp://*:' + constants.PORT_CLIENT_PINGS);
+    clientPingsPub.bind('tcp://*:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_PINGS);
     var module = {};
    
     function pingClients (){
