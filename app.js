@@ -7,7 +7,7 @@ if(!process.argv[2]){
 }
 
 var IP_ATAHUALPA = process.argv[2];
-var chaski_connector = require('chaski-connector')({ipAtahualpa:IP_ATAHUALPA, typeChaski:constants.CHASI_TYPE_ZEROMQ});
+var chaski_connector = require('../chaski-connector')({ipAtahualpa:IP_ATAHUALPA, typeChaski:constants.CHASI_TYPE_ZEROMQ});
 var log = bunyan.createLogger({name: "chaski"});
 
 
