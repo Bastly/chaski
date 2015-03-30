@@ -36,7 +36,7 @@ describe('Message Publisher', function() {
         var messagePublisher = require('../worker/messagePublisher')();
 
         var receiver = zmq.socket('sub');
-        receiver.connect('tcp://127.0.0.1:' + constants.PORT_PUBLISHER_FOR_CLIENTS);
+        receiver.connect('tcp://127.0.0.1:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_MESSAGES);
         receiver.subscribe('fakeChannel');
         var channel = 'fakeChannel';
         var dataToPublish = 'fakeData';

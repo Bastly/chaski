@@ -39,7 +39,7 @@ domain.run(function(){
     log.info('Launching');
 
     var IP_ATAHUALPA = process.argv[2];
-    var chaski_connector = require('../chaski-connector')({ipAtahualpa:IP_ATAHUALPA, typeChaski:constants.CHASI_TYPE_ZEROMQ, log:log});
+    var chaski_connector = require('../chaski-connector')({ipAtahualpa:IP_ATAHUALPA, log:log});
 
 
     var clientPings = require('./worker/clientPings')({log:log});
@@ -48,6 +48,6 @@ domain.run(function(){
     messagePublisher.send('hola');
     log.info(messagePublisher);
     
-    var messageReceiver = chaski_connector.messageReceiver({"messagePublisher": messagePublisher , "atahualpas": [{"ip": IP_ATAHUALPA}]});
-    var channelAssign = chaski_connector.channelAssign({"messageReceiver": messageReceiver, log:log});
+    var busData = chaski_connector.busData({"messagePublisher": messagePublisher , "atahualpas": [{"ip": IP_ATAHUALPA}]});
+    var busOps = chaski_connector.busOps({busData: busData, log:log, chaskiId:constants.CHASKI_TYPE_ZEROMQ});
 });

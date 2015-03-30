@@ -7,7 +7,7 @@ module.exports = function(options){
     var logHandler = require('../logHandler');
     var log = logHandler({name:'messagePublisher', log:opts.log});
     
-    messagePublisherPub.bind('tcp://*:' + constants.PORT_PUBLISHER_FOR_CLIENTS);
+    messagePublisherPub.bind('tcp://*:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_MESSAGES);
 
     var module = {info:'a message publisher appears!' };
     
