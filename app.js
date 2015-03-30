@@ -39,7 +39,7 @@ domain.run(function(){
     log.info('Launching');
 
     var IP_ATAHUALPA = process.argv[2];
-    var chaski_connector = require('../chaski-connector')({ipAtahualpa:IP_ATAHUALPA, log:log});
+    var chaski_connector = require('chaski-connector')({ipAtahualpa:IP_ATAHUALPA, log:log});
 
 
     var clientPings = require('./worker/clientPings')({log:log});
