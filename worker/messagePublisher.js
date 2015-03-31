@@ -11,9 +11,9 @@ module.exports = function(options){
 
     var module = {info:'a message publisher appears!' };
     
-    module.send = function send(params){
+    module.send = function send(topic, data){
         log.info('sending message');
-        messagePublisherPub.send(params);
+        messagePublisherPub.send([topic, data]);
     };
     
     module.close = function close(){
