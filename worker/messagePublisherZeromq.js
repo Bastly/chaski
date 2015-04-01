@@ -3,25 +3,27 @@ module.exports = function(options){
     var opts = options || {}; 
     var zmq = require('zmq');
     var constants = require('bastly_constants');
-    var messagePublisherPub = zmq.socket('pub'); // publishing channel to forward messages that should be handled by workers.
+    // publishing channel to forward messages to cliet
+    var messagePublisherPub = zmq.socket('pub'); 
     var logHandler = require('../logHandler');
     var log = logHandler({name:'messagePublisher', log:opts.log});
-    
-    messagePublisherPub.bind('tcp://*:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_MESSAGES);
+    var messagePubliserUrl =  'tcp://*:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_MESSAGES;
+    log.info('message publisher bind on', messagePubliserUrl);
+    messagePublisherPub.bind(messagePubliserUrl);
 
-    var module = {info:'a message publisher appears!' };
+    var module = {info:'module message publisher'};
     
     module.send = function send(topic, data){
-        log.info('sending message');
+        log.info('sending message', topic, data);
         messagePublisherPub.send([topic, data]);
     };
     
     module.close = function close(){
-        log.info('closing message publisher');
+        log.info('closing', module);
         messagePublisherPub.close();
     };
     
-    log.info('message publisher loaded');
+    log.info(module, 'loaded');
     
     return module;
 };

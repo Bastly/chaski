@@ -17,7 +17,11 @@ var log = bunyan.createLogger
 //giving bunyan a chance to flush
 domain.on('error', function(err){
     // log the exception
-    log.fatal(err);
+    try {
+        log.fatal(err);
+    }
+    catch (errWtritingErr) {
+    }
 
     if (typeof(log.streams[0]) !== 'object') return;
 
@@ -36,18 +40,54 @@ domain.run(function(){
         log.info('Must give atahualpa ip');
         throw new Error('insuficientarametersgiven');
     }
-    log.info('Launching');
+
+    if(!process.argv[3]){
+        log.info('Must give chaskiType');
+        throw new Error('chaskiType needed');
+    }
+    
+    if(!process.argv[4]){
+        log.info('Must give a chaskiId');
+        throw new Error('chaski id needed ');
+    }
+   
+    var module = {info:"chaski-connector"};
+
 
     var IP_ATAHUALPA = process.argv[2];
-    var chaski_connector = require('../chaski-connector')({ipAtahualpa:IP_ATAHUALPA, log:log, chaskiId:constants.CHASKI_TYPE_ZEROMQ, chaskiType:constants.CHASKI_TYPE_ZEROMQ});
-
-
-    var clientPings = require('./worker/clientPings')({log:log});
-    var messagePublisher = require('./worker/messagePublisher')({log:log});
-    log.info('message publisher is');
-    messagePublisher.send('hola');
-    log.info(messagePublisher);
+    var CHASKI_TYPE = process.argv[3];
+    var CHASKI_ID = process.argv[4];
     
-    var busData = chaski_connector.busData({"messagePublisher": messagePublisher, "atahualpas": [{"ip": IP_ATAHUALPA}]});
-    var busOps = chaski_connector.busOps({busData: busData, log:log, "atahualpas": [{"ip": IP_ATAHUALPA}]});
+    log.info('Launching chaski',IP_ATAHUALPA, CHASKI_TYPE, CHASKI_ID);
+    var clientPings;
+    var messagePublisher;
+    if(CHASKI_ID == CHASKI_TYPE_ZEROMQ){
+        clientPings = require('./worker/clientPingsZeromq')({log:log});
+        messagePublisher = require('./worker/messagePublisherZeromq')({log:log});
+    } else if (CHASKI_ID == CHASKI_TYPE_SOCKETIO){
+        var app = require('express')();
+        var http = require('http').Server(app);
+        var io = require('socket.io')(http);
+
+        io.on('connection', function(socket){
+            log.info('Someone connected');
+        });
+
+        http.listen(3000, function(){
+            log.info('listening on *:3000');
+        });
+        clientPings = require('./worker/clientPingsSocketio')({io: io, log:log});
+        messagePublisher = require('./worker/messagePublisherSocketio')({io: io, log:log});
+    }else{
+        log.info('Chaki type not implemented', CHASKI_TYPE);
+        throw new Error('Chaki type not implemented');
+    }
+
+
+    var busData = require('./worker/busData')({log:opts.log, "messagePublisher": messagePublisher, "atahualpas": [{"ip": IP_ATAHUALPA}]});
+    var busOps = require('./worker/busOps')({log:log, chaskiId:CHASKI_ID, busData:busData, "atahualpas": [{"ip": IP_ATAHUALPA}] });
+
+
+    log.info('launched');
+    
 });
