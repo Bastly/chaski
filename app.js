@@ -61,10 +61,10 @@ domain.run(function(){
     log.info('Launching chaski',IP_ATAHUALPA, CHASKI_TYPE, CHASKI_ID);
     var clientPings;
     var messagePublisher;
-    if(CHASKI_ID == CHASKI_TYPE_ZEROMQ){
+    if(CHASKI_ID == constants.CHASKI_TYPE_ZEROMQ){
         clientPings = require('./worker/clientPingsZeromq')({log:log});
         messagePublisher = require('./worker/messagePublisherZeromq')({log:log});
-    } else if (CHASKI_ID == CHASKI_TYPE_SOCKETIO){
+    } else if (CHASKI_ID == constants.CHASKI_TYPE_SOCKETIO){
         var app = require('express')();
         var http = require('http').Server(app);
         var io = require('socket.io')(http);
@@ -84,7 +84,7 @@ domain.run(function(){
     }
 
 
-    var busData = require('./worker/busData')({log:opts.log, "messagePublisher": messagePublisher, "atahualpas": [{"ip": IP_ATAHUALPA}]});
+    var busData = require('./worker/busData')({log:log, "messagePublisher": messagePublisher, "atahualpas": [{"ip": IP_ATAHUALPA}]});
     var busOps = require('./worker/busOps')({log:log, chaskiId:CHASKI_ID, busData:busData, "atahualpas": [{"ip": IP_ATAHUALPA}] });
 
 
