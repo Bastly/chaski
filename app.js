@@ -61,10 +61,10 @@ domain.run(function(){
     log.info('Launching chaski',IP_ATAHUALPA, CHASKI_TYPE, CHASKI_ID);
     var clientPings;
     var messagePublisher;
-    if(CHASKI_ID == constants.CHASKI_TYPE_ZEROMQ){
+    if(CHASKI_TYPE == constants.CHASKI_TYPE_ZEROMQ){
         clientPings = require('./worker/clientPingsZeromq')({log:log});
         messagePublisher = require('./worker/messagePublisherZeromq')({log:log});
-    } else if (CHASKI_ID == constants.CHASKI_TYPE_SOCKETIO){
+    } else if (CHASKI_TYPE == constants.CHASKI_TYPE_SOCKETIO){
         var app = require('express')();
         var http = require('http').Server(app);
         var io = require('socket.io')(http);
