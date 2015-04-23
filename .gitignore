@@ -30,3 +30,5 @@ node_modules
 #vim
 *.swp
 *.swo
+
+test-reports.xml
