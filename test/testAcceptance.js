@@ -4,7 +4,15 @@ var config = require('./config.json');
 var zmq = require('zmq');
 var constants = require('bastly_constants');
 var bunyan = require('bunyan');
-var log = bunyan.createLogger({name: "tests"});
+var log = bunyan.createLogger
+({
+    name: "chaski-test",
+    streams: [
+        {
+            path: '/var/log/chaski-test.log'
+        }
+    ]
+});
 
 describe('Array', function() {
     describe('#indexOf()', function() {
@@ -18,7 +26,7 @@ describe('Array', function() {
 describe('Must receive pings', function() {
     it('It must receive zeromq pings', function (done) {
 
-        var clientPings = require('../worker/clientPingsZeromq')();
+        var clientPings = require('../worker/clientPingsZeromq')({log:log});
 
         var pong = zmq.socket('sub');
         pong.connect('tcp://127.0.0.1:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_PINGS);
@@ -35,7 +43,7 @@ describe('Must receive pings', function() {
 describe('Message Publisher', function() {
     it('It must publish zeromq messages', function (done) {
 
-        var messagePublisher = require('../worker/messagePublisherZeromq')();
+        var messagePublisher = require('../worker/messagePublisherZeromq')({log:log});
 
         var channel = 'fakeChannel';
         var reveiverUrl = 'tcp://127.0.0.1:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_MESSAGES;
