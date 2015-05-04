@@ -13,7 +13,7 @@ module.exports = function(options){
 
     var module = {info:'module message publisher'};
     
-    module.send = function send(topic, data){
+    module.send = function send(topic, from, data){
         log.info('sending message', topic, data);
         messagePublisherPub.send([topic, from, data]);
     };
