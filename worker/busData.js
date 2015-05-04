@@ -37,7 +37,7 @@ module.exports = function(options){
     //handle messages send from atahualpa
     var onMessageCallback = function(to, from, apikey, data){
         log.info('got a message, publishing it', to.toString(), from.toString(), apikey.toString(), data.toString());
-        messagePublisher.send(to.toString(), data.toString());
+        messagePublisher.send(to.toString(), from.toString(), data.toString());
     };
 
 

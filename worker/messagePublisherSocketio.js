@@ -11,9 +11,9 @@ module.exports = function(options){
     
     var module = {"info":"this is a messagePublisher module"};
     
-    module.send = function send(topic, message){
-        log.info('sending message', topic, message);
-        io.emit(topic, message);
+    module.send = function send(topic, from, message){
+        log.info('sending message', topic, from, message);
+        io.emit(topic, { from: from, data: message });
     };
     
     module.close = function close(){
