@@ -55,7 +55,7 @@ describe('Message Publisher', function() {
         var dataToPublish = 'fakeData';
 
         var sendFakeData = function (){
-            messagePublisher.send(channel, from, dataToPublish);
+            messagePublisher.send(channel, fromOwner, dataToPublish);
         };
 
         var intervaler = setInterval(sendFakeData, 300);
@@ -95,6 +95,7 @@ describe('Data bus registers and listen to channel', function() {
         var sendFakeData = function (){
             atahualpaMock.send([fakeChannel, fakeChannel, fakeApi, dataToPublish]);
         };
+
         var intervaler = setInterval(sendFakeData, 10);
 
         busData.addChannel(fakeChannel);
