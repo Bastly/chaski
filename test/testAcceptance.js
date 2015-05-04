@@ -8,9 +8,9 @@ var log = bunyan.createLogger
 ({
     name: "chaski-test",
     streams: [
-        {
-            path: '/var/log/chaski-test.log'
-        }
+    {
+        path: '/var/log/chaski-test.log'
+    }
     ]
 });
 
@@ -46,6 +46,7 @@ describe('Message Publisher', function() {
         var messagePublisher = require('../worker/messagePublisherZeromq')({log:log});
 
         var channel = 'fakeChannel';
+        var fromOwner = 'fakeUser';
         var reveiverUrl = 'tcp://127.0.0.1:' + constants.PORT_PUB_SUB_CHASKI_CLIENT_MESSAGES;
         log.info('connecting', reveiverUrl);
         var receiver = zmq.socket('sub');
@@ -54,15 +55,19 @@ describe('Message Publisher', function() {
         var dataToPublish = 'fakeData';
 
         var sendFakeData = function (){
-            messagePublisher.send(channel, dataToPublish);
+            messagePublisher.send(channel, from, dataToPublish);
         };
-        setInterval(sendFakeData, 300);
-        receiver.on('message', function(topic, data) {
+
+        var intervaler = setInterval(sendFakeData, 300);
+
+        receiver.on('message', function(topic, from, data) {
             log.info('received');
             assert.equal(channel, topic);
             assert.equal(data, dataToPublish);
+            assert.equal(from, fromOwner);
             messagePublisher.close();
             receiver.close();
+            intervaler.clearTimeout();
             done();
         });
     });
@@ -71,6 +76,7 @@ describe('Message Publisher', function() {
 describe('Data bus registers and listen to channel', function() {
     it('Receives messages', function (done) {
         var messagePublisher = {};
+
         messagePublisher.send = function(topic, from, data) {
             assert.equal(fakeChannel, topic.toString());
             assert.equal(dataToPublish, data.toString());
@@ -78,18 +84,20 @@ describe('Data bus registers and listen to channel', function() {
             atahualpaMock.close();
             done();
         };
-       var busData = require('../worker/busData')({log:log, messagePublisher:messagePublisher, "atahualpas": [{"ip": "127.0.0.1"}]});
+
+        var busData = require('../worker/busData')({log:log, messagePublisher:messagePublisher, "atahualpas": [{"ip": "127.0.0.1"}]});
         var fakeChannel = 'fake';
         var fakeApi = 'apkfake';
         var dataToPublish = 'holavato';
         var atahualpaMock = zmq.socket('pub');
         atahualpaMock.bind('tcp://*:' + constants.PORT_PUB_SUB_ATAHUALPA_CHASKI_MESSAGES);
+        
         var sendFakeData = function (){
             atahualpaMock.send([fakeChannel, fakeChannel, fakeApi, dataToPublish]);
         };
-        setInterval(sendFakeData, 10);
+        var intervaler = setInterval(sendFakeData, 10);
+
         busData.addChannel(fakeChannel);
-        
     });
 });
 
