@@ -15,7 +15,7 @@ module.exports = function(options){
     
     module.send = function send(topic, data){
         log.info('sending message', topic, data);
-        messagePublisherPub.send([topic, data]);
+        messagePublisherPub.send([topic, from, data]);
     };
     
     module.close = function close(){
