@@ -67,7 +67,7 @@ describe('Message Publisher', function() {
             assert.equal(from, fromOwner);
             messagePublisher.close();
             receiver.close();
-            intervaler.clearTimeout();
+            intervaler.clearInterval();
             done();
         });
     });
