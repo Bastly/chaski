@@ -71,7 +71,7 @@ describe('Message Publisher', function() {
 describe('Data bus registers and listen to channel', function() {
     it('Receives messages', function (done) {
         var messagePublisher = {};
-        messagePublisher.send = function(topic, data) {
+        messagePublisher.send = function(topic, from, data) {
             assert.equal(fakeChannel, topic.toString());
             assert.equal(dataToPublish, data.toString());
             busData.close();
@@ -97,7 +97,7 @@ describe('Data bus registers and listen to channel', function() {
 describe('BusOps ', function() {
     it('Registers new channel to listen and receives data in that channel', function (done) {
         var messagePublisher = {};
-        messagePublisher.send = function(topic, data) {
+        messagePublisher.send = function(topic, from, data) {
             assert.equal(fakeChannel, topic.toString());
             assert.equal(dataToPublish, data.toString());
             busData.close();
